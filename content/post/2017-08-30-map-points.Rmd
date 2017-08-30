@@ -180,3 +180,30 @@ base + geom_point(data = xy_clust,
        
 ```
 
+We can add a Voronoi tesselation which will indicate which points belong to
+which cluster:
+
+```{r voronoi, message = FALSE}
+
+library(deldir)
+vor <- deldir(xy_clust$lon, xy_clust$lat)
+
+gg_vor <- geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
+		       data = vor$dirsgs,
+    		       linetype = 1,
+		       color= "black")
+
+
+base + geom_point(col = "red", alpha = .2) +
+       gg_vor +	      
+       theme(legend.position = c(.1,.8))
+       
+```
+
+To complete this, we can represent the number of cases in each Voronoi polyon:
+
+```{r voronoi_2}
+
+
+
+```
