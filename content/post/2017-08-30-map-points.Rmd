@@ -137,6 +137,8 @@ base + geom_point(col = "black", alpha = .15) +
 
 ```
 
+
+
 One can also represent case density using a heatmap:
 
 ```{r density_map_3}
@@ -150,34 +152,31 @@ base + stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .3) +
 ```
 
 
-It would also make sense to aggregate data first. This is a bit less trivial as
-there are several options for this:
 
-- use a clustering method based on lon/lat, and defining locations as geographic
-  centres of the clusters
 
-- round up locations and use `xyTable`
+### Using spatial clustering
 
-We illustrate the latter, which may be more likely to reflect actual situations
-where locations have low resolution (e.g. village, district level, etc.).
+Point data may be non-randomly distributed, in which case it would make sense to
+identify clusters of infections. This can be achieve using various
+algorithms. Here, we illustrated the use of the *Kmeans* approach. This method
+uses spatial coordinates and a pre-defined number of clusters to identify
+spatial groups, so as to minimize the overall distance between cases and their
+group centroid.
 
-```{r aggregate_map}
-
-xy_rough <- data.frame(xyTable(lonlat, digits = 4))
-base + geom_point(data = xy_rough, aes(x = x, y = y, size = number),
-       		  col = "red", alpha = .5)
-
-```
-
-And here is the clustering version; we use $k-means$ as it is fairly quick and
-offers the nice feature of the underlying Voronoi tesselation space
-partitioning:
+We illustrate this procedure for an arbitrary number of groups set to 60 (this
+number can be varied to suit the needs of a specific dataset):
 
 ```{r clust_map}
 
 clust <- kmeans(lonlat, centers = 60)
-xy_clust <- data.frame(clust$centers, number = clust$size)
-base + geom_point(data = xy_clust, aes(x = lon, y = lat, size = number),
-       		  col = "red", alpha = .5)
 
+xy_clust <- data.frame(clust$centers, number = clust$size)
+
+base + geom_point(data = xy_clust,
+       		  aes(x = lon, y = lat, size = number, color = cluster),
+       		  alpha = .5, color = "red") +
+       scale_size("Number of cases", range = c(1,15)) +
+       theme(legend.position = c(.1,.8))
+       
 ```
+
