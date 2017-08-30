@@ -1,0 +1,92 @@
+---
+title: Create custom maps from openstreetmap
+author: ~
+date: '2017-08-30'
+slug: osmplotr-maps
+categories: []
+tags: []
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(osmplotr)
+library(osmdata)
+library(dplyr)
+library(sf)
+library(ggrepel)
+```
+
+
+# Create custom maps from openstreetmap
+
+[Openstreetmaps](https://www.openstreetmap.org/) is a gigantic collection of geographical information. Most often, it is used to create base maps for plots. This small tutorial shows how you can generate your own custom openstreetmap base map for `ggplot2` and how to extract data from OSM.
+
+Our goal is to create a map of Freetown with just the roads. In addition we will search openstreetmap for hospitals in Freetown and display them on a map as well.
+
+All this is based on the excellent packages [osmplotr](https://github.com/ropensci/osmplotr) and [osmdata](https://github.com/ropensci/osmdata) by Mark Padgham et al., that makes it incredibly easy to interact with openstreetmap.
+
+## Creating the basemap
+
+First we define the bounding box around Freetown, then we query objects tagged with `highway` and add them to our map. The resulting object is a `ggplot2` object and so we can further process it.
+
+```{r, message=FALSE, cache = TRUE}
+library(osmplotr)
+
+# A bounding box of Freetown
+bbox <- get_bbox(c(-13.3, 8.41, -13.1, 8.51))
+
+# get highways by type
+dat_highway_prim <- extract_osm_objects(key = "highway", value = "primary", bbox = bbox)
+dat_highway_sec <- extract_osm_objects(key = "highway", value = "secondary", bbox = bbox)
+dat_highway_tert <- extract_osm_objects(key = "highway", value = "tertiary", bbox = bbox)
+dat_highway_res <- extract_osm_objects(key = "highway", value = "residential", bbox = bbox)
+	
+# now create the map
+# more important roads are darker
+map <- osm_basemap(bbox = bbox, bg = "white")
+map <- add_osm_objects(map, dat_highway_res, col = "gray90")
+map <- add_osm_objects(map, dat_highway_tert, col = "gray80")
+map <- add_osm_objects(map, dat_highway_sec, col = "gray60")
+map <- add_osm_objects(map, dat_highway_prim, col = "gray40")
+
+map
+```
+
+## Adding hospital data as points
+
+We can query openstreetmap data with the package `osmdata`. In this example we look for all points taged with `amenity` = `hospital`. In this case, the data is a simple feature `sf` object that can be processed with familiar verbs, like `filter` or `select`.
+
+
+```{r, cache = TRUE, message=FALSE}
+library(magrittr)
+library(osmdata)
+# query the overpass API for hospitals
+# and return a sf object
+hospitals <- bbox %>%
+  opq () %>% 
+  add_osm_feature("amenity", "hospital") %>% 
+  osmdata_sf()
+
+library(dplyr)
+library(sf)
+# only use the points with type == "hospital"
+hospitals <- filter(hospitals$osm_points, !is.na(name), type == "hospital")
+select(hospitals, name, amenity, type)
+```
+
+
+The only thing now left to do is add the hospitals to the map and display the labels. Here we use `ggrepel` to prevent labels from overlapping.
+
+```{r}
+library(ggrepel)
+map <- add_osm_objects(map, hospitals, col = "red")
+
+plot_hospitals <- as.data.frame(hospitals) %>% 
+  rowwise() %>% 
+  mutate(lat = geometry[1], lon = geometry[2]) 
+map + 
+  geom_label_repel(data = plot_hospitals, aes(lat, lon, label = name), size = 2)
+```
+
+## Data Copyright
+
+Data (c) OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright
