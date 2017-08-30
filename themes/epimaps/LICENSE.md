@@ -1,3 +1,7 @@
+Template initially by Yihui Xie. Below is the license:
+
+------
+
 The MIT License (MIT)
 
 Copyright (c) 2016 Jonathan Rutheiser, 2016 - 2017 Yihui Xie

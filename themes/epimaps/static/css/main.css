@@ -1,3 +1,7 @@
+.item-img-preview {
+  width:300px;
+}
+
 html,
 body {
   margin: 0;
@@ -91,7 +95,7 @@ code {
 }
 
 .content {
-  max-width: 700px;
+  max-width: 1000px;
   margin: 40px auto 10px;
   padding: 0 15px;
   font-size: 16px;
@@ -187,9 +191,9 @@ code {
 }
 
 .archive-item-link {
-  display: inline-block;
+  /*display: inline-block;*/
   text-decoration: none;
-  font-size: 21px;
+  font-size: 13px;
   font-weight: bold;
   color: #222;
   padding: 5px 0;
