@@ -1,0 +1,183 @@
+---
+title: "Mapping point data using R"
+author: "Thibaut Jombart"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+categories: ["R"]
+tags: ["R Markdown", "map", "plot"]
+output: html_document
+---
+
+
+
+```{r, echo = FALSE}
+options(width = 100)
+
+knitr::opts_chunk$set(
+  fig.width = 7, 
+  fig.height = 7,
+  dev = 'png',
+  fig.path = "figs/",
+  collapse = TRUE
+)
+```
+
+
+In this tutorial, we illustrate how to generate maps using point
+data. Typically, individual points will correspond to the location of a reported
+case. We will illustrate several approaches including: basic point maps,
+representing point density, and using spatial clustering to approximate spatial
+structures.
+
+
+
+
+
+### The data: a simulated Ebola outbreak in Freetown
+
+This example uses the latest devel version of the
+[http://www.repidemicsconsortium.org/outbreaks/](*outbreaks*) package, which can
+be installed by typing:
+
+```{r install, eval = FALSE }
+
+devtools::install_github("reconhub/outbreaks")
+
+```
+
+Note that this requires `devtools` to be installed with its dependencies.
+
+
+Once installed, we load the package and have a quick look at the data:
+
+
+```{r data}
+
+library(outbreaks)
+
+class(ebola_sim)
+names(ebola_sim)
+
+head(ebola_sim$linelist)
+
+## column 10 = longitude
+## column 11 = latitude
+lonlat <- ebola_sim$linelist[, c(10, 11)]
+head(lonlat)
+nrow(lonlat)
+
+```
+
+`ebola_sim` is a `list` whose first component is a `data.frame` containing the
+**linelist** of a simulated outbreak. Each row is a different reported case,
+with individual spatial coordinates provided as longitude and latitude. We
+isolate these coordinates in a 2-columns `data.frame`.
+
+**Tip to use your own data**: you can read data from a spreadsheet into R and
+use the procedure described here, making sure you indicate the right columns for
+longitude and latitude (in our example, columns 10 and 11). The most common
+formats will be:
+
+- `.xlsx`: use the function `read.xlsx` from the `xlsx` package
+- `.csv`: use the function `read.csv` from base R
+- `.txt`: use the function `read.table` from base R
+
+
+
+### Basic point map
+
+The packages *ggmap* and *ggplot2* can be used to visualise the distribution of
+cases on a map. The function `get_map` can be tailored (see `?get_map`) to use
+different zoom levels and different map backgrounds. Once the background map has
+been created, normal *ggplot2* features can be used to overlay graphics on the
+map:
+
+```{r basic_map}
+
+library(ggmap)
+library(ggplot2)
+
+## spatial locations
+base_points <- ggplot(data = lonlat, aes(x = lon, y = lat))
+
+## make basic map
+base <- ggmap(get_map(lonlat, zoom = 13), base_layer = base_points)
+
+## visualise map and spatial distribution
+base + geom_point(col = "red", alpha = .3)
+
+```
+
+Here, transparency (the `alpha` parameter) is used to give an idea of point
+density when close locations result in partly overlapping symbols. In the following part we see how this can be improved using *density estimation* or *spatial clustering*.
+
+
+
+
+### Visualising point density
+
+Kernel density estimation can be used to visualise the density of points (here,
+a proxy for the number of cases) on a map; this can be done easily using
+*ggplot2*'s `geom_density_2d` feature:
+
+```{r density_map}
+
+base + geom_point(col = "red", alpha = .3) + geom_density_2d()
+
+```
+
+The amount of smoothing used in the density estimation is determined by a
+parameter `h`; for instance, for less smoothing (adding some customisation for
+colors and line types):
+
+```{r density_map_2}
+
+base + geom_point(col = "black", alpha = .15) +
+       geom_density_2d(color = "red", h = 0.005)
+
+
+```
+
+One can also represent case density using a heatmap:
+
+```{r density_map_3}
+
+heat_colors <- scale_fill_gradientn("Case density", colors = c("white", "gold", "red", "darkred"))
+
+base + stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .3) +
+       heat_colors +
+       theme(legend.position = c(.1,.8))
+       
+```
+
+
+It would also make sense to aggregate data first. This is a bit less trivial as
+there are several options for this:
+
+- use a clustering method based on lon/lat, and defining locations as geographic
+  centres of the clusters
+
+- round up locations and use `xyTable`
+
+We illustrate the latter, which may be more likely to reflect actual situations
+where locations have low resolution (e.g. village, district level, etc.).
+
+```{r aggregate_map}
+
+xy_rough <- data.frame(xyTable(lonlat, digits = 4))
+base + geom_point(data = xy_rough, aes(x = x, y = y, size = number),
+       		  col = "red", alpha = .5)
+
+```
+
+And here is the clustering version; we use $k-means$ as it is fairly quick and
+offers the nice feature of the underlying Voronoi tesselation space
+partitioning:
+
+```{r clust_map}
+
+clust <- kmeans(lonlat, centers = 60)
+xy_clust <- data.frame(clust$centers, number = clust$size)
+base + geom_point(data = xy_clust, aes(x = lon, y = lat, size = number),
+       		  col = "red", alpha = .5)
+
+```
