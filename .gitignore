@@ -33,4 +33,6 @@ vignettes/*.pdf
 *.knit.md
 .Rproj.user
 
-public
+/public
+/static
+/blogdown
