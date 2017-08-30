@@ -41,7 +41,7 @@ code {
 .header {
   padding: 20px 0;
   position: relative;
-  background: #f5f5f5;
+  background: #294481;
   border-bottom: 1px solid #eaeaea;
 }
 
@@ -66,7 +66,6 @@ code {
   display: block;
   max-height: 40px;
   width: auto;
-  border-radius: 50%;
 }
 
 .nav-links {
@@ -87,7 +86,7 @@ code {
 
 .nav-links a {
   text-decoration: none;
-  color: #111;
+  color: #FFF;
 }
 
 .nav-links a:hover {
@@ -175,6 +174,10 @@ code {
 .archive-title {
   font-size: 32px;
   margin-top: 60px;
+}
+
+.archive-item:hover {
+  text-decoration: underline;
 }
 
 .archive-item {
