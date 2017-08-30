@@ -86,7 +86,7 @@ plot_hospitals <- as.data.frame(hospitals) %>%
   rowwise() %>% 
   mutate(lat = geometry[1], lon = geometry[2]) 
 map + 
-  geom_label(data = plot_hospitals, aes(lat, lon, label = name), size = 2)
+  geom_label_repel(data = plot_hospitals, aes(lat, lon, label = name), size = 2)
 ```
 
 ## Data Copyright
