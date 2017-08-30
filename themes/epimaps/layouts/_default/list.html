@@ -10,11 +10,11 @@
   </article>
   {{ else }}
   <h1>RECON GIS first aid</h1>
-  <div class="archive">
-    <div class="row">
+  <div class="container">
+    <div class="row justify-content-center">
     {{ range (where .Data.Pages "Section" "!=" "") }}
     <div class="col-3">
-    <article class="archive-item">
+    <article class="archive-item text-center">
       <a href="{{ .RelPermalink }}" class="archive-item-link">{{ .Title }}</a><br>
       <a href="{{ .RelPermalink }}" ><img src="{{ .Params.image }}" alt="" class="item-img-preview"></a>
     </article>
