@@ -2,6 +2,7 @@
 title: Create custom maps from openstreetmap
 author: ~
 date: '2017-08-30'
+image: "post/2017-08-30-osmplotr-maps_files/figure-html/osmplot2-1.png"
 slug: osmplotr-maps
 categories: []
 tags: []
@@ -76,7 +77,7 @@ select(hospitals, name, amenity, type)
 
 The only thing now left to do is add the hospitals to the map and display the labels. Here we use `ggrepel` to prevent labels from overlapping.
 
-```{r}
+```{r osmplot2}
 library(ggrepel)
 map <- add_osm_objects(map, hospitals, col = "red")
 
