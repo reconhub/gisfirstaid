@@ -22,6 +22,16 @@ Our goal is to create a map of Freetown with just the roads. In addition we will
     </item>
     
     <item>
+      <title>Example to plot spatiotemporal areal data</title>
+      <link>/2017/08/30/stplot/</link>
+      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/30/stplot/</guid>
+      <description>Background Often surveillance data will be reported through a line list whereby cases have information on the time of symptoms and the administrative area of residence (e.g. district). As well as plotting a time series of cases, a map of aggregated case counts at the administrative area would be informative. [Data aggregated at the administrative level is known as areal data].
+Here we show how to create such a map for multiple time periods.</description>
+    </item>
+    
+    <item>
       <title>Mapping point data using R</title>
       <link>/2017/08/30/map-points/</link>
       <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>

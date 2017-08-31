@@ -120,32 +120,26 @@ library(sf)
 # only use the points with type == &quot;hospital&quot;
 hospitals &lt;- filter(hospitals$osm_points, !is.na(name), type == &quot;hospital&quot;)
 select(hospitals, name, amenity, type)</code></pre>
-<pre><code>## Simple feature collection with 9 features and 3 fields
+<pre><code>## Simple feature collection with 6 features and 3 fields
 ## geometry type:  POINT
 ## dimension:      XY
-## bbox:           xmin: -13.28041 ymin: 8.385998 xmax: -13.13049 ymax: 8.489861
+## bbox:           xmin: -13.28041 ymin: 8.424321 xmax: -13.19371 ymax: 8.489861
 ## epsg (SRID):    4326
 ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
 ##                                    name  amenity     type
 ## 1                  Blue Shield Hospital hospital hospital
-## 2     China-SL Friendship Hospital, Jui hospital hospital
-## 3                        DOCTOR QUARTER hospital hospital
-## 4                          Goderich ETC hospital hospital
-## 5                    Lakka Hospital ETU hospital hospital
-## 6            Lumley Government Hospital hospital hospital
-## 7    Police Training Sch-Hastings 1 ETC hospital hospital
-## 8 Princess Christian Maternity Hospital hospital hospital
-## 9          SL SACRIFICE HOSPITAL MENTAL hospital hospital
+## 2                        DOCTOR QUARTER hospital hospital
+## 3                          Goderich ETC hospital hospital
+## 4            Lumley Government Hospital hospital hospital
+## 5 Princess Christian Maternity Hospital hospital hospital
+## 6          SL SACRIFICE HOSPITAL MENTAL hospital hospital
 ##                         geometry
 ## 1 POINT (-13.2466716766357 8....
-## 2 POINT (-13.1427555084229 8....
-## 3 POINT (-13.1937084197998 8....
-## 4 POINT (-13.2804069519043 8....
-## 5 POINT (-13.2639999389648 8....
-## 6 POINT (-13.2624807357788 8....
-## 7 POINT (-13.1304883956909 8....
-## 8 POINT (-13.2193479537964 8....
-## 9 POINT (-13.1938190460205 8....</code></pre>
+## 2 POINT (-13.1937084197998 8....
+## 3 POINT (-13.2804069519043 8....
+## 4 POINT (-13.2624807357788 8....
+## 5 POINT (-13.2193479537964 8....
+## 6 POINT (-13.1938190460205 8....</code></pre>
 <p>The only thing now left to do is add the hospitals to the map and display the labels. Here we use <code>ggrepel</code> to prevent labels from overlapping.</p>
 <pre class="r"><code>library(ggrepel)
 map &lt;- add_osm_objects(map, hospitals, col = &quot;red&quot;)
