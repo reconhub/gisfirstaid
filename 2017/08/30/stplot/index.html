@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.25" />
+<meta name="generator" content="Hugo 0.26" />
 
 
 <title>Example to plot spatiotemporal areal data - RECON mapping first aid</title>
@@ -72,68 +72,104 @@
     
 
     <div class="article-content">
-      <div id="background" class="section level2">
-<h2>Background</h2>
-<p>Often surveillance data will be reported through a line list whereby cases have information on the time of symptoms and the administrative area of residence (e.g. district). As well as plotting a time series of cases, a map of aggregated case counts at the administrative area would be informative. [Data aggregated at the administrative level is known as areal data].</p>
+      
+
+<h2 id="background">Background</h2>
+
+<p>Often surveillance data will be reported through a line list whereby cases have information on the time of symptoms and the administrative area of residence (e.g. district). As well as plotting a time series of cases, a map of aggregated case counts at the administrative area would be informative. [Data aggregated at the administrative level is known as areal data].</p>
+
 <p>Here we show how to create such a map for multiple time periods.</p>
-</div>
-<div id="reading-areal-polygon-data-into-r" class="section level2">
-<h2>Reading areal polygon data into R</h2>
-<p>You will need a map with the boundaries of the administrative areas. Freely available maps are available from <a href="http://www.gadm.org/country" class="uri">http://www.gadm.org/country</a>. This example has assumed you have downloaded the Sierra Leone shapefile.</p>
+
+<h2 id="reading-areal-polygon-data-into-r">Reading areal polygon data into R</h2>
+
+<p>You will need a map with the boundaries of the administrative areas. Freely available maps are available from <a href="http://www.gadm.org/country">http://www.gadm.org/country</a>. This example has assumed you have downloaded the Sierra Leone shapefile.</p>
+
 <p>Here is how to read the shapefile into R and plot the shapefile. We assume you have downloaded the shapefile for each admin level from the link above and have saved in a folder called Geodata. We then plot the three levels of admin data on one map and write the adm2 names in the middle of the area for reference.</p>
-<pre class="r"><code>par(mar=c(0,0,0,0))
-adm2data&lt;-raster::getData(&#39;GADM&#39;, country=&#39;SLE&#39;, level=2)
-adm1data&lt;-raster::getData(&#39;GADM&#39;, country=&#39;SLE&#39;, level=1)
-adm0data&lt;-raster::getData(&#39;GADM&#39;, country=&#39;SLE&#39;, level=0)
+
+<pre><code class="language-r">par(mar=c(0,0,0,0))
+adm2data&lt;-raster::getData('GADM', country='SLE', level=2)
+adm1data&lt;-raster::getData('GADM', country='SLE', level=1)
+adm0data&lt;-raster::getData('GADM', country='SLE', level=0)
 
 library(sp)
 plot(adm2data,border=&quot;grey&quot;)
 plot(adm1data,add=T)
 plot(adm0data,add=T,lwd=2)
-text(getSpPPolygonsLabptSlots(adm2data), labels=adm2data$NAME_2, cex=0.6)</code></pre>
-<pre><code>## Warning: use coordinates method</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/read_plot_map-1.png" width="672" /></p>
-</div>
-<div id="spatial-incidence-data" class="section level2">
-<h2>Spatial incidence data</h2>
+text(getSpPPolygonsLabptSlots(adm2data), labels=adm2data$NAME_2, cex=0.6)
+</code></pre>
+
+<pre><code>## Warning: use coordinates method
+</code></pre>
+
+<p><img src="figure/read_plot_map-1.png" alt="plot of chunk read_plot_map" /></p>
+
+<h2 id="spatial-incidence-data">Spatial incidence data</h2>
+
 <p>Now we read in the surveillance data. Each case has an adm2 location attached to it</p>
-<pre class="r"><code>dat=outbreaks::ebola_sim$linelist
+
+<pre><code class="language-r">dat=outbreaks::ebola_sim$linelist
 
 #randomly assign district location
 dat$adm2&lt;-sample(adm2data$NAME_2,size=nrow(dat),replace = T,prob=c(0.15,0.1,0.01,0.01,0.02,0,0,
                                                                    0.05,0.01,0,0.05,0.1,0.25,0.25)
-                 )</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
+                 )
+</code></pre>
+
 <p>To plot cumulative incidence we need to aggregate the cases by adm2 unit</p>
-<pre class="r"><code>agg_dist&lt;-as.data.frame(table(dat$adm2))
-names(agg_dist)[1]=&quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile</code></pre>
+
+<pre><code class="language-r">agg_dist&lt;-as.data.frame(table(dat$adm2))
+names(agg_dist)[1]=&quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile
+</code></pre>
+
 <p>We then need to merge this with the shapefile</p>
-<pre class="r"><code>adm2data&lt;-merge(adm2data,agg_dist,by=&quot;NAME_2&quot;,all.x=T)
-adm2data$Freq[which(is.na(adm2data$Freq))]&lt;-0</code></pre>
-<p>Then create a map of cumulative cases ussing spplot function from the ‘sp’ package</p>
-<pre class="r"><code>sp::spplot(adm2data,&quot;Freq&quot;)</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/map%20cumulative-1.png" width="672" /></p>
-<p>Now tweak the colours. Here we use ‘RColorBrewer’ package. Firstly let’s see what palettes are available</p>
-<pre class="r"><code>RColorBrewer::display.brewer.all()</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/colour%20choice-1.png" width="672" /></p>
+
+<pre><code class="language-r">adm2data&lt;-merge(adm2data,agg_dist,by=&quot;NAME_2&quot;,all.x=T)
+adm2data$Freq[which(is.na(adm2data$Freq))]&lt;-0
+</code></pre>
+
+<p>Then create a map of cumulative cases ussing spplot function from the &lsquo;sp&rsquo; package</p>
+
+<pre><code class="language-r">sp::spplot(adm2data,&quot;Freq&quot;)
+</code></pre>
+
+<p><img src="figure/map cumulative-1.png" alt="plot of chunk map cumulative" /></p>
+
+<p>Now tweak the colours. Here we use &lsquo;RColorBrewer&rsquo; package. Firstly let&rsquo;s see what palettes are available</p>
+
+<pre><code class="language-r">RColorBrewer::display.brewer.all()
+</code></pre>
+
+<p><img src="figure/colour choice-1.png" alt="plot of chunk colour choice" /></p>
+
 <p>and choose the red palette</p>
-<pre class="r"><code>col_pal=RColorBrewer::brewer.pal(9,&quot;Reds&quot;)[-(1:2)] # remove first two as white
-my_col=colorRampPalette(col_pal)</code></pre>
+
+<pre><code class="language-r">col_pal=RColorBrewer::brewer.pal(9,&quot;Reds&quot;)[-(1:2)] # remove first two as white
+my_col=colorRampPalette(col_pal)
+</code></pre>
+
 <p>Now we put this into the maps</p>
-<pre class="r"><code>cats&lt;-c(0,1,50,100,250,500,1000,1500,2000)
+
+<pre><code class="language-r">cats&lt;-c(0,1,50,100,250,500,1000,1500,2000)
 mp&lt;-sp::spplot(adm2data,&quot;Freq&quot;,at=cats,col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),col=&quot;#E0EEE0&quot;)
-mp</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/make%20map%20colour-1.png" width="672" /></p>
+mp
+</code></pre>
+
+<p><img src="figure/make map colour-1.png" alt="plot of chunk make map colour" /></p>
+
 <p>Now we add other admin boundaries</p>
-<pre class="r"><code>mp&lt;-mp + latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) + latticeExtra::layer(sp.polygons(adm0data,lwd=2))
-mp</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/make%20all%20boundaries-1.png" width="672" /></p>
-</div>
-<div id="plotting-spatiotemporal-data" class="section level2">
-<h2>Plotting spatiotemporal data</h2>
-<p>Now we could like to see how the spatial incidence changes across the course of the epidemic</p>
+
+<pre><code class="language-r">mp&lt;-mp + latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) + latticeExtra::layer(sp.polygons(adm0data,lwd=2))
+mp
+</code></pre>
+
+<p><img src="figure/make all boundaries-1.png" alt="plot of chunk make all boundaries" /></p>
+
+<p>##Plotting spatiotemporal data
+Now we could like to see how the spatial incidence changes across the course of the epidemic</p>
+
 <p>Firstly we need to aggregate the data by month and adm2</p>
-<pre class="r"><code>agg_dat_spatiotemp=incidence::incidence(dat$date_of_onset,30,groups=dat$adm2)
+
+<pre><code class="language-r">agg_dat_spatiotemp=incidence::incidence(dat$date_of_onset,30,groups=dat$adm2)
 
 matrix_inc=t(agg_dat_spatiotemp$counts)
 colnames(matrix_inc)=1:ncol(matrix_inc)
@@ -147,25 +183,35 @@ colnames(matrix_inc_ex)=colnames(matrix_inc)
 all_matrix&lt;-t(merge(t(matrix_inc),t(matrix_inc_ex),by=&quot;row.names&quot;,all=TRUE)[,-1])
 
 #order rows by order of shapefile
-all_matrix=all_matrix[adm2data$NAME_2,]</code></pre>
+all_matrix=all_matrix[adm2data$NAME_2,]
+</code></pre>
+
 <p>Now we create an object to store the spatiotemporal data</p>
-<pre class="r"><code>stfdf_obj&lt;-spacetime::STFDF(as(adm2data,&quot;SpatialPolygons&quot;),
+
+<pre><code class="language-r">stfdf_obj&lt;-spacetime::STFDF(as(adm2data,&quot;SpatialPolygons&quot;),
                           xts::xts(1:length(agg_dat_spatiotemp$dates),agg_dat_spatiotemp$dates),
                           data.frame(
                             spt=c((all_matrix)),
                             row.names=1:(nrow(all_matrix)*ncol(all_matrix))
                           )
-                          )</code></pre>
+                          )
+</code></pre>
+
 <p>Now finally we plot the spatiotemporal data</p>
-<pre class="r"><code>spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
-           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),col=&quot;#E0EEE0&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7) ) + #latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) +
-  latticeExtra::layer(sp.polygons(adm0data,lwd=2))</code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime-1.png" width="672" /></p>
+
+<pre><code class="language-r">spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
+           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),col=&quot;#E0EEE0&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7) ) + latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) + latticeExtra::layer(sp.polygons(adm0data,lwd=2))
+</code></pre>
+
+<p><img src="figure/plot_spacetime-1.png" alt="plot of chunk plot_spacetime" /></p>
+
 <p>We can also view the data in a grid</p>
-<pre class="r"><code>spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
-           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),mode=&quot;xt&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7)) </code></pre>
-<p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime_grid-1.png" width="672" /></p>
-</div>
+
+<pre><code class="language-r">spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
+           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),mode=&quot;xt&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7)) 
+</code></pre>
+
+<p><img src="figure/plot_spacetime_grid-1.png" alt="plot of chunk plot_spacetime_grid" /></p>
 
     </div>
   </article>
