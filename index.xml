@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>RECON mapping first aid</title>
+    <link>/</link>
+    <description>Recent content on RECON mapping first aid</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 30 Aug 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Create custom maps from openstreetmap</title>
+      <link>/2017/08/30/osmplotr-maps/</link>
+      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/30/osmplotr-maps/</guid>
+      <description>Openstreetmaps is a gigantic collection of geographical information. Most often, it is used to create base maps for plots. This small tutorial shows how you can generate your own custom openstreetmap base map for ggplot2 and how to extract data from OSM.
+Our goal is to create a map of Freetown with just the roads. In addition we will search openstreetmap for hospitals in Freetown and display them on a map as well.</description>
+    </item>
+    
+    <item>
+      <title>Mapping point data using R</title>
+      <link>/2017/08/30/map-points/</link>
+      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/30/map-points/</guid>
+      <description>In this tutorial, we illustrate how to generate maps using point data. Typically, individual points will correspond to the location of a reported case. We will illustrate several approaches including: basic point maps, representing point density, and using spatial clustering to approximate spatial structures.
+The data: a simulated Ebola outbreak in Freetown This example uses the latest devel version of the http://www.repidemicsconsortium.org/outbreaks/ package, which can be installed by typing:
+ devtools::install_github(&amp;quot;reconhub/outbreaks&amp;quot;)  Note that this requires devtools to be installed with its dependencies.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
+      
+      <guid>/about/</guid>
+      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
+    </item>
+    
+  </channel>
+</rss>

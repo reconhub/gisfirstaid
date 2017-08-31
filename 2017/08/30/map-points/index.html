@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.25" />
+
+
+<title>Mapping point data using R - RECON mapping first aid</title>
+<meta property="og:title" content="Mapping point data using R - RECON mapping first aid">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav2">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="http://www.repidemicsconsortium.org">About</a></li>
+    
+    <li><a href="https://github.com/reconhub">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+    <a href="https://github.com/reconhub/gisfirstaid" style="cursor:hand;"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Mapping point data using R</h1>
+
+    
+    <span class="article-date">2017/08/30</span>
+    by
+    <span class="article-author">Thibaut Jombart</span>
+    
+
+    <div class="article-content">
+      <p>In this tutorial, we illustrate how to generate maps using point data. Typically, individual points will correspond to the location of a reported case. We will illustrate several approaches including: basic point maps, representing point density, and using spatial clustering to approximate spatial structures.</p>
+<div id="the-data-a-simulated-ebola-outbreak-in-freetown" class="section level3">
+<h3>The data: a simulated Ebola outbreak in Freetown</h3>
+<p>This example uses the latest devel version of the <a href="*outbreaks*">http://www.repidemicsconsortium.org/outbreaks/</a> package, which can be installed by typing:</p>
+<pre class="r"><code>
+devtools::install_github(&quot;reconhub/outbreaks&quot;)
+</code></pre>
+<p>Note that this requires <code>devtools</code> to be installed with its dependencies.</p>
+<p>Once installed, we load the package and have a quick look at the data:</p>
+<pre class="r"><code>
+library(outbreaks)
+
+class(ebola_sim)
+## [1] &quot;list&quot;
+names(ebola_sim)
+## [1] &quot;linelist&quot; &quot;contacts&quot;
+
+head(ebola_sim$linelist)
+##   case_id generation date_of_infection date_of_onset date_of_hospitalisation date_of_outcome
+## 1  d1fafd          0              &lt;NA&gt;    2014-04-07              2014-04-17      2014-04-19
+## 2  53371b          1        2014-04-09    2014-04-15              2014-04-20            &lt;NA&gt;
+## 3  f5c3d8          1        2014-04-18    2014-04-21              2014-04-25      2014-04-30
+## 4  6c286a          2              &lt;NA&gt;    2014-04-27              2014-04-27      2014-05-07
+## 5  0f58c4          2        2014-04-22    2014-04-26              2014-04-29      2014-05-17
+## 6  49731d          0        2014-03-19    2014-04-25              2014-05-02      2014-05-07
+##   outcome gender           hospital       lon      lat
+## 1    &lt;NA&gt;      f  Military Hospital -13.21799 8.473514
+## 2    &lt;NA&gt;      m Connaught Hospital -13.21491 8.464927
+## 3 Recover      f              other -13.22804 8.483356
+## 4   Death      f               &lt;NA&gt; -13.23112 8.464776
+## 5 Recover      f              other -13.21016 8.452143
+## 6    &lt;NA&gt;      f               &lt;NA&gt; -13.23443 8.468572
+
+## column 10 = longitude
+## column 11 = latitude
+lonlat &lt;- ebola_sim$linelist[, c(10, 11)]
+head(lonlat)
+##         lon      lat
+## 1 -13.21799 8.473514
+## 2 -13.21491 8.464927
+## 3 -13.22804 8.483356
+## 4 -13.23112 8.464776
+## 5 -13.21016 8.452143
+## 6 -13.23443 8.468572
+nrow(lonlat)
+## [1] 5888</code></pre>
+<p><code>ebola_sim</code> is a <code>list</code> whose first component is a <code>data.frame</code> containing the <strong>linelist</strong> of a simulated outbreak. Each row is a different reported case, with individual spatial coordinates provided as longitude and latitude. We isolate these coordinates in a 2-columns <code>data.frame</code>.</p>
+<p><strong>Tip to use your own data</strong>: you can read data from a spreadsheet into R and use the procedure described here, making sure you indicate the right columns for longitude and latitude (in our example, columns 10 and 11). The most common formats will be:</p>
+<ul>
+<li><code>.xlsx</code>: use the function <code>read.xlsx</code> from the <code>xlsx</code> package</li>
+<li><code>.csv</code>: use the function <code>read.csv</code> from base R</li>
+<li><code>.txt</code>: use the function <code>read.table</code> from base R</li>
+</ul>
+</div>
+<div id="basic-point-map" class="section level3">
+<h3>Basic point map</h3>
+<p>The packages <em>ggmap</em> and <em>ggplot2</em> can be used to visualise the distribution of cases on a map. The function <code>get_map</code> can be tailored (see <code>?get_map</code>) to use different zoom levels and different map backgrounds. Once the background map has been created, normal <em>ggplot2</em> features can be used to overlay graphics on the map:</p>
+<pre class="r"><code>
+library(ggmap)
+## Loading required package: ggplot2
+library(ggplot2)
+
+## spatial locations
+base_points &lt;- ggplot(data = lonlat, aes(x = lon, y = lat))
+
+## make basic map
+base &lt;- ggmap(get_map(lonlat, zoom = 13), base_layer = base_points) +
+        labs(x = &quot;&quot;, y = &quot;&quot;)
+## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=8.469638,-13.233806&amp;zoom=13&amp;size=640x640&amp;scale=2&amp;maptype=terrain&amp;language=en-EN&amp;sensor=false
+
+## visualise map and spatial distribution
+base + geom_point(col = &quot;red&quot;, alpha = .3)</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/basic_map-1.png" width="672" /></p>
+<p>Here, transparency (the <code>alpha</code> parameter) is used to give an idea of point density when close locations result in partly overlapping symbols. In the following part we see how this can be improved using <em>density estimation</em> or <em>spatial clustering</em>.</p>
+</div>
+<div id="visualising-point-density" class="section level3">
+<h3>Visualising point density</h3>
+<p>Kernel density estimation can be used to visualise the density of points (here, a proxy for the number of cases) on a map; this can be done easily using <em>ggplot2</em>’s <code>geom_density_2d</code> feature:</p>
+<pre class="r"><code>
+base + geom_point(col = &quot;red&quot;, alpha = .3) + geom_density_2d()</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/density_map-1.png" width="672" /></p>
+<p>The amount of smoothing used in the density estimation is determined by a parameter <code>h</code>; for instance, for less smoothing (adding some customisation for colors and line types):</p>
+<pre class="r"><code>
+base + geom_point(col = &quot;black&quot;, alpha = .15) +
+       geom_density_2d(color = &quot;red&quot;, h = 0.005)</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/density_map_2-1.png" width="672" /></p>
+<p>One can also represent case density using a heatmap:</p>
+<pre class="r"><code>
+heat_colors &lt;- scale_fill_gradientn(&quot;Case density&quot;, colors = c(&quot;white&quot;, &quot;gold&quot;, &quot;red&quot;, &quot;darkred&quot;))
+
+base + stat_density_2d(aes(fill = ..level..), geom = &quot;polygon&quot;, alpha = .3) +
+       heat_colors +
+       theme(legend.position = c(.12, .85))</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/density_map_3-1.png" width="672" /></p>
+</div>
+<div id="using-spatial-clustering" class="section level3">
+<h3>Using spatial clustering</h3>
+<p>Point data may be non-randomly distributed, in which case it would make sense to identify clusters of infections. This can be achieve using various algorithms. Here, we illustrated the use of the <em>Kmeans</em> approach. This method uses spatial coordinates and a pre-defined number of clusters to identify spatial groups, so as to minimize the overall distance between cases and their group centroid.</p>
+<p>We illustrate this procedure for an arbitrary number of groups set to 60 (this number can be varied to suit the needs of a specific dataset):</p>
+<pre class="r"><code>
+clust &lt;- kmeans(lonlat, centers = 60)
+
+xy_clust &lt;- data.frame(clust$centers, number = clust$size)
+
+base + geom_point(data = xy_clust,
+              aes(x = lon, y = lat, size = number, color = cluster),
+              alpha = .5, color = &quot;red&quot;) +
+       scale_size(&quot;Number of cases&quot;, range = c(1,15)) +
+       theme(legend.position = c(.1,.8))</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/clust_map-1.png" width="672" /></p>
+<p>We can add a Voronoi tesselation which will indicate which points belong to which cluster:</p>
+<pre class="r"><code>
+library(deldir)
+vor &lt;- deldir(xy_clust$lon, xy_clust$lat)
+
+gg_vor &lt;- geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
+               data = vor$dirsgs,
+                   linetype = 1,
+               color= &quot;black&quot;)
+
+
+base + geom_point(col = &quot;red&quot;, alpha = .2) +
+       gg_vor +       
+       theme(legend.position = c(.1,.8))</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/voronoi-1.png" width="672" /></p>
+<p>To complete this, we can represent the number of cases in each Voronoi polyon; this is best done using new features in the <em>ggforce</em> package (install them by typing: <code>devtools::install_github(&quot;thomasp85/ggforce&quot;)</code>):</p>
+<pre class="r"><code>
+library(ggforce)
+
+heat_colors2 &lt;- scale_fill_gradientn(&quot;Number of cases&quot;, colors = c(&quot;white&quot;, &quot;gold&quot;, &quot;red&quot;, &quot;darkred&quot;))
+
+base + geom_voronoi_tile(data = xy_clust, aes(fill = number), alpha = .5) +
+                heat_colors2 +
+            theme(legend.position = c(.15,.85))</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/voronoi_2-1.png" width="672" /></p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+            If not stated otherwise: text ist licesensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. Code is licensed <a href="https://opensource.org/licenses/MIT">MIT</a>.
+
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
