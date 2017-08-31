@@ -1,6 +1,6 @@
 {{ partial "header.html" . }}
 
-<main class="content" role="main">
+<main class="container" role="main">
 
   {{ if and .IsHome .Content }}
   <article class="article">
@@ -10,17 +10,19 @@
   </article>
   {{ else }}
   <h1>RECON GIS first aid</h1>
-  <div class="container">
     <div class="row justify-content-center">
     {{ range (where .Data.Pages "Section" "!=" "") }}
-    <div class="col-3">
+    <div class="col-md-3 article-preview">
     <article class="archive-item text-center">
-      <a href="{{ .RelPermalink }}" class="archive-item-link">{{ .Title }}</a><br>
-      <a href="{{ .RelPermalink }}" ><img src="{{ .Params.image }}" alt="" class="item-img-preview"></a>
+      <a href="{{ .RelPermalink }}">
+      <h5>{{ .Title }} <small class="text-muted">{{ .Date.Format "2006/01/02" }}</small></h5>
+      <figure class="figure">
+        <img src="{{ .Params.image }}" class="figure-img img-fluid rounded" alt="A generic square placeholder image with rounded corners in a figure.">
+        <figcaption class="figure-caption">{{ .Params.caption }}</figcaption>
+      </figure></a>
     </article>
     </div>
     {{ end }}
-    </div>
   </div>
   {{ end }}
 

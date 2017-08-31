@@ -11,6 +11,8 @@
 
     {{ if eq .Section "post" }}
     <span class="article-date">{{ .Date.Format "2006/01/02" }}</span>
+    by
+    <span class="article-author">{{ .Params.author }}</span>
     {{ end }}
 
     <div class="article-content">

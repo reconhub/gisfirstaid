@@ -1,6 +1,7 @@
 ---
 title: Create custom maps from openstreetmap
 author: "Dirk Schumacher"
+caption: "Use osmplotr and osmdata to query openstreetmap"
 date: '2017-08-30'
 image: "post/2017-08-30-osmplotr-maps_files/figure-html/osmplot2-1.png"
 slug: osmplotr-maps
@@ -34,12 +35,15 @@ First we define the bounding box around Freetown, then we query objects tagged w
 library(osmplotr)
 
 # A bounding box of Freetown
-bbox <- get_bbox(c(-13.3, 8.41, -13.1, 8.51))
+bbox <- osmdata::getbb("Freetown")
 
 # get highways by type
 dat_highway_prim <- extract_osm_objects(key = "highway", value = "primary", bbox = bbox)
+Sys.sleep(1) # be nice to overpass API
 dat_highway_sec <- extract_osm_objects(key = "highway", value = "secondary", bbox = bbox)
+Sys.sleep(1) # be nice to overpass API
 dat_highway_tert <- extract_osm_objects(key = "highway", value = "tertiary", bbox = bbox)
+Sys.sleep(1) # be nice to overpass API
 dat_highway_res <- extract_osm_objects(key = "highway", value = "residential", bbox = bbox)
 	
 # now create the map
