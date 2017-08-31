@@ -201,19 +201,3 @@ base + geom_point(col = "red", alpha = .2) +
        theme(legend.position = c(.1,.8))
        
 ```
-
-To complete this, we can represent the number of cases in each Voronoi polyon;
-this is best done using new features in the *ggforce* package (install them by
-typing: `devtools::install_github("thomasp85/ggforce")`):
-
-```{r voronoi_2}
-
-library(ggforce)
-
-heat_colors2 <- scale_fill_gradientn("Number of cases", colors = c("white", "gold", "red", "darkred"))
-
-base + geom_voronoi_tile(data = xy_clust, aes(fill = number), alpha = .5) +
-  	            heat_colors2 +
-		    theme(legend.position = c(.15,.85))
-
-```
