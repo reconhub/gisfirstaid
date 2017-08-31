@@ -50,8 +50,6 @@ dat$adm2<-sample(adm2data$NAME_2,size=nrow(dat),replace = T,prob=c(0.15,0.1,0.01
                  )
 
 
-
-
 ```
 
 To plot cumulative incidence we need to aggregate the cases by adm2 unit
