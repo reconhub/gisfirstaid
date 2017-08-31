@@ -111,7 +111,6 @@ mp
 ```
 
 
-
 We can also view the data in a grid
 ```{r plot_spacetime_grid}
 
