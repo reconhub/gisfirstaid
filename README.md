@@ -1,6 +1,6 @@
 # RECON GIS first aid
 
-A website with example on common GIS problems in epidemiology.
+A website with examples on common GIS problems in epidemiology.
 
 ## Live version
 It is currently hosted here: https://gisfirstaid.netlify.com/
