@@ -8,7 +8,7 @@ slug: choropleths
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
 ```
 
 # Load packages
@@ -293,8 +293,6 @@ leaflet() %>%
     data = sle_sf,
     stroke = TRUE, weight = 1, color = "black", opacity = 1,
     fillColor = ~pal(cases),
-    popup = ~popup,
-    popupOptions = popupOptions(maxWidth = 500, maxHeight = 200),
     fillOpacity = 0.5, smoothFactor = 0.5
   ) %>% 
   addMarkers(
