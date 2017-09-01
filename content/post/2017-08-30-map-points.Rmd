@@ -1,5 +1,5 @@
 ---
-title: "Mapping point data using R"
+title: "Mapping point data"
 author: "Thibaut Jombart"
 date: 2017-08-30
 categories: ["R"]
