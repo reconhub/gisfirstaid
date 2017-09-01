@@ -36,3 +36,9 @@ vignettes/*.pdf
 /public
 /static
 /blogdown
+content/post/*.html
+content/post/*.rds
+content/post/*.png
+content/post/*.md
+content/post/*_cache
+content/post/*_files
