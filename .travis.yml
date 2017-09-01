@@ -21,8 +21,6 @@ r_github_packages:
 
 cache:
   packages: yes
-  directories:
-    - $HOME/bin
 
 before_script:
   - Rscript -e 'blogdown::install_hugo()'
