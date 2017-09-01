@@ -17,7 +17,7 @@ cache:
     - $HOME/bin
 
 before_script:
-  - Rscript -e 'remotes::install_deps()'
+  - Rscript -e 'devtools::install_deps()'
   - Rscript -e 'blogdown::install_hugo()'
 
 #script:
