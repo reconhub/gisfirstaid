@@ -29,4 +29,4 @@ script:
   - Rscript -e 'blogdown::build_site()'
 
 after_success:
-  - travispush.sh
+  - sh travispush.sh
