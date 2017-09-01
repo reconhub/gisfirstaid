@@ -16,9 +16,14 @@ Imports:
   ggmap,
   deldir,
   leaflet,
+  leaflet.extras,
   ggrepel,
   geosphere,
   htmlwidgets,
+  tmap,
+  lubridate,
+  stringr,
+  tidyverse,
   webshot,
   geosphere
 Remotes:

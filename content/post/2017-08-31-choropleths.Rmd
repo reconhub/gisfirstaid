@@ -194,7 +194,7 @@ ebola_df <-
   as.tibble %>% 
   mutate(
     date = 
-      str_c(
+      paste(
         month(date_of_onset, label = TRUE),
         year(date_of_onset), sep = '-'
       )
