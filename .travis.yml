@@ -6,8 +6,10 @@ branches:
   only:
     - master
 
-apt_packages:
-  - libudunits2-dev
+addons:
+  apt:
+    packages:
+    - libudunits2-dev
 
 cache:
   packages: yes
