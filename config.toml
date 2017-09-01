@@ -3,7 +3,7 @@ languageCode = "en-us"
 title = "RECON mapping first aid"
 theme = "epimaps"
 googleAnalytics = ""
-disqusShortname = "reconhub-github-io"
+disqusShortname = "gisfirstaid"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "flowsmap.html"]
 
 [permalinks]
