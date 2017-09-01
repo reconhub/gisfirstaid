@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.25" />
+<meta name="generator" content="Hugo 0.26" />
 
 
 <title>Mapping point data using R - RECON mapping first aid</title>
@@ -60,7 +60,7 @@
 
   <article class="article">
     
-    <span class="article-duration">4 min read</span>
+    <span class="article-duration">5 min read</span>
     
 
     <h1 class="article-title">Mapping point data using R</h1>
@@ -130,9 +130,8 @@ nrow(lonlat)
 <h3>Basic point map</h3>
 <p>The packages <em>ggmap</em> and <em>ggplot2</em> can be used to visualise the distribution of cases on a map. The function <code>get_map</code> can be tailored (see <code>?get_map</code>) to use different zoom levels and different map backgrounds. Once the background map has been created, normal <em>ggplot2</em> features can be used to overlay graphics on the map:</p>
 <pre class="r"><code>
-library(ggmap)
-## Loading required package: ggplot2
 library(ggplot2)
+library(ggmap)
 
 ## spatial locations
 base_points &lt;- ggplot(data = lonlat, aes(x = lon, y = lat))
@@ -160,43 +159,53 @@ base + geom_point(col = &quot;black&quot;, alpha = .15) +
 <p><img src="/post/2017-08-30-map-points_files/figure-html/density_map_2-1.png" width="672" /></p>
 <p>One can also represent case density using a heatmap:</p>
 <pre class="r"><code>
-heat_colors &lt;- scale_fill_gradientn(&quot;Case density&quot;, colors = c(&quot;white&quot;, &quot;gold&quot;, &quot;red&quot;, &quot;darkred&quot;))
+heat_colors &lt;- scale_fill_gradientn(&quot;Case density&quot;, colors = c(&quot;white&quot;, &quot;gold&quot;, &quot;red&quot;, &quot;darkred&quot;), guide = FALSE)
 
 base + stat_density_2d(aes(fill = ..level..), geom = &quot;polygon&quot;, alpha = .3) +
-       heat_colors +
-       theme(legend.position = c(.12, .85))</code></pre>
+       heat_colors</code></pre>
 <p><img src="/post/2017-08-30-map-points_files/figure-html/density_map_3-1.png" width="672" /></p>
 </div>
 <div id="using-spatial-clustering" class="section level3">
 <h3>Using spatial clustering</h3>
 <p>Point data may be non-randomly distributed, in which case it would make sense to identify clusters of infections. This can be achieve using various algorithms. Here, we illustrated the use of the <em>Kmeans</em> approach. This method uses spatial coordinates and a pre-defined number of clusters to identify spatial groups, so as to minimize the overall distance between cases and their group centroid.</p>
-<p>We illustrate this procedure for an arbitrary number of groups set to 60 (this number can be varied to suit the needs of a specific dataset):</p>
+<p>We illustrate this procedure for an arbitrary number of groups set to 60 (this number can be varied to suit the needs of a specific dataset). This feature uses the devel version of <a href="https://github.com/reconhub/epimaps"><em>epimaps</em></a>, which can be installed using <code>install_github(&quot;reconhub/epimaps&quot;)</code>.</p>
 <pre class="r"><code>
-clust &lt;- kmeans(lonlat, centers = 60)
-
-xy_clust &lt;- data.frame(clust$centers, number = clust$size)
-
-base + geom_point(data = xy_clust,
-              aes(x = lon, y = lat, size = number, color = cluster),
-              alpha = .5, color = &quot;red&quot;) +
-       scale_size(&quot;Number of cases&quot;, range = c(1,15)) +
-       theme(legend.position = c(.1,.8))</code></pre>
+library(epimaps)
+clust &lt;- spatial_clusters(lonlat, 60)
+clust
+## 
+##   /// spatial_clusters object
+##   // $lonlat: [matrix] lon/lat for 5888 point locations
+##   // $clusters_coords: [matrix] lon/lat/size for clusters
+##   // $clusters: [factor] cluster membership for 5888 point locations
+##   // $voronoi: [deldir] voronoi tesselation for clusters
+plot(clust)</code></pre>
 <p><img src="/post/2017-08-30-map-points_files/figure-html/clust_map-1.png" width="672" /></p>
-<p>We can add a Voronoi tesselation which will indicate which points belong to which cluster:</p>
-<pre class="r"><code>
-library(deldir)
-vor &lt;- deldir(xy_clust$lon, xy_clust$lat)
+<p>We can add a Voronoi tesselation which will indicate which points belong to which cluster (see <code>?plot.spatial_clusters</code> for options):</p>
+<pre class="r"><code>## basic plot
 
-gg_vor &lt;- geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
-               data = vor$dirsgs,
-                   linetype = 1,
-               color= &quot;black&quot;)
-
-
-base + geom_point(col = &quot;red&quot;, alpha = .2) +
-       gg_vor +       
-       theme(legend.position = c(.1,.8))</code></pre>
+plot(clust, show_tiles = TRUE)</code></pre>
 <p><img src="/post/2017-08-30-map-points_files/figure-html/voronoi-1.png" width="672" /></p>
+<pre class="r"><code>
+
+## more customisation
+
+plot(clust, show_tiles = TRUE, show_clusters = FALSE,
+     show_points = TRUE, pt_alpha = 0.1)</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/voronoi-2.png" width="672" /></p>
+<pre class="r"><code>
+
+## different representation, more granularity
+
+new_clust &lt;- spatial_clusters(lonlat, 500)
+
+plot(new_clust, show_tiles = TRUE, show_clusters = FALSE,
+     show_points = TRUE, show_density = TRUE, zoom = 14,
+     dens_bw = 0.01, pt_col = &quot;black&quot;, pt_alpha = 0.1)
+## Warning: Removed 883 rows containing non-finite values (stat_density2d).
+## Warning: Removed 883 rows containing missing values (geom_point).
+## Warning: Removed 266 rows containing missing values (geom_segment).</code></pre>
+<p><img src="/post/2017-08-30-map-points_files/figure-html/voronoi-3.png" width="672" /></p>
 </div>
 
     </div>

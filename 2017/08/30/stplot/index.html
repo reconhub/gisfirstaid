@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.25" />
+<meta name="generator" content="Hugo 0.26" />
 
 
 <title>Example to plot spatiotemporal areal data - RECON mapping first aid</title>
@@ -60,7 +60,7 @@
 
   <article class="article">
     
-    <span class="article-duration">3 min read</span>
+    <span class="article-duration">2 min read</span>
     
 
     <h1 class="article-title">Example to plot spatiotemporal areal data</h1>
@@ -90,8 +90,7 @@ library(sp)
 plot(adm2data,border=&quot;grey&quot;)
 plot(adm1data,add=T)
 plot(adm0data,add=T,lwd=2)
-text(getSpPPolygonsLabptSlots(adm2data), labels=adm2data$NAME_2, cex=0.6)</code></pre>
-<pre><code>## Warning: use coordinates method</code></pre>
+text(coordinates(adm2data), labels=adm2data$NAME_2, cex=0.6)</code></pre>
 <p><img src="/post/2017-08-30-stplot_files/figure-html/read_plot_map-1.png" width="672" /></p>
 </div>
 <div id="spatial-incidence-data" class="section level2">
@@ -99,18 +98,17 @@ text(getSpPPolygonsLabptSlots(adm2data), labels=adm2data$NAME_2, cex=0.6)</code>
 <p>Now we read in the surveillance data. Each case has an adm2 location attached to it</p>
 <pre class="r"><code>dat=outbreaks::ebola_sim$linelist
 
-#randomly assign district location
+#randomly assign district location for now to simulated data
 dat$adm2&lt;-sample(adm2data$NAME_2,size=nrow(dat),replace = T,prob=c(0.15,0.1,0.01,0.01,0.02,0,0,
                                                                    0.05,0.01,0,0.05,0.1,0.25,0.25)
                  )</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
 <p>To plot cumulative incidence we need to aggregate the cases by adm2 unit</p>
 <pre class="r"><code>agg_dist&lt;-as.data.frame(table(dat$adm2))
 names(agg_dist)[1]=&quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile</code></pre>
 <p>We then need to merge this with the shapefile</p>
 <pre class="r"><code>adm2data&lt;-merge(adm2data,agg_dist,by=&quot;NAME_2&quot;,all.x=T)
 adm2data$Freq[which(is.na(adm2data$Freq))]&lt;-0</code></pre>
-<p>Then create a map of cumulative cases ussing spplot function from the ‘sp’ package</p>
+<p>Then create a map of cumulative cases using spplot function from the ‘sp’ package</p>
 <pre class="r"><code>sp::spplot(adm2data,&quot;Freq&quot;)</code></pre>
 <p><img src="/post/2017-08-30-stplot_files/figure-html/map%20cumulative-1.png" width="672" /></p>
 <p>Now tweak the colours. Here we use ‘RColorBrewer’ package. Firstly let’s see what palettes are available</p>
@@ -132,37 +130,18 @@ mp</code></pre>
 <div id="plotting-spatiotemporal-data" class="section level2">
 <h2>Plotting spatiotemporal data</h2>
 <p>Now we could like to see how the spatial incidence changes across the course of the epidemic</p>
-<p>Firstly we need to aggregate the data by month and adm2</p>
-<pre class="r"><code>agg_dat_spatiotemp=incidence::incidence(dat$date_of_onset,30,groups=dat$adm2)
+<p>We use the incidence package to generate monthly incidence by each district and the spacetime function from the epimaps package to then plot the data</p>
+<pre class="r"><code>#devtools::install_github(&quot;reconhub/epimaps&quot;)
+agg_dat_spatiotemp=incidence::incidence(dat$date_of_onset,30,groups=dat$adm2)
 
-matrix_inc=t(agg_dat_spatiotemp$counts)
-colnames(matrix_inc)=1:ncol(matrix_inc)
-#add districts no incidence
-extra&lt;-adm2data$NAME_2 [which(!(adm2data$NAME_2 %in% rownames(matrix_inc)))]
-matrix_inc_ex=matrix(0,nrow = length(extra),ncol = ncol(matrix_inc))
-rownames(matrix_inc_ex)=extra
-colnames(matrix_inc_ex)=colnames(matrix_inc)
-
-
-all_matrix&lt;-t(merge(t(matrix_inc),t(matrix_inc_ex),by=&quot;row.names&quot;,all=TRUE)[,-1])
-
-#order rows by order of shapefile
-all_matrix=all_matrix[adm2data$NAME_2,]</code></pre>
-<p>Now we create an object to store the spatiotemporal data</p>
-<pre class="r"><code>stfdf_obj&lt;-spacetime::STFDF(as(adm2data,&quot;SpatialPolygons&quot;),
-                          xts::xts(1:length(agg_dat_spatiotemp$dates),agg_dat_spatiotemp$dates),
-                          data.frame(
-                            spt=c((all_matrix)),
-                            row.names=1:(nrow(all_matrix)*ncol(all_matrix))
-                          )
-                          )</code></pre>
-<p>Now finally we plot the spatiotemporal data</p>
-<pre class="r"><code>spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
-           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),col=&quot;#E0EEE0&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7) ) + latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) + latticeExtra::layer(sp.polygons(adm0data,lwd=2))</code></pre>
+mp=epimaps::spacetime(agg_dat_spatiotemp,adm2data,type=&quot;map&quot;,main=&quot;&quot;,pal = my_col,
+                      par.strip.text=list(cex=0.7),col=&quot;#E0EEE0&quot;)
+mp=mp+ latticeExtra::layer(sp.polygons(adm1data,lwd=1.2)) + latticeExtra::layer(sp.polygons(adm0data,lwd=2))
+mp</code></pre>
 <p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime-1.png" width="672" /></p>
 <p>We can also view the data in a grid</p>
-<pre class="r"><code>spacetime::stplot(stfdf_obj, agg_dat_spatiotemp$dates, at=cats, 
-           col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),mode=&quot;xt&quot;,animate=0, main=&quot;&quot;,par.strip.text=list(cex=0.7)) </code></pre>
+<pre class="r"><code>epimaps::spacetime(agg_dat_spatiotemp,adm2data,type = &quot;heatmap&quot;,main=&quot;&quot;
+)</code></pre>
 <p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime_grid-1.png" width="672" /></p>
 </div>
 
