@@ -275,8 +275,16 @@ leaflet() %>%
 ```{r}
 our_imperial_masters <- 
   iconList(
-    teebz = makeIcon("teebz.jpg", "teebz.jpg", 100, 100),
-    rich = makeIcon("rich.jpg", "rich.jpg", 100, 100)
+    teebz = 
+      makeIcon(
+        "https://i1.sndcdn.com/avatars-000038319795-u5v0iq-t500x500.jpg",
+        "https://i1.sndcdn.com/avatars-000038319795-u5v0iq-t500x500.jpg", 
+        100, 100),
+    rich = 
+      makeIcon(
+        "https://avatars1.githubusercontent.com/u/1558093?v=4&s=400", 
+        "https://avatars1.githubusercontent.com/u/1558093?v=4&s=400", 
+        100, 100)
   )
 
 leaflet() %>% 
