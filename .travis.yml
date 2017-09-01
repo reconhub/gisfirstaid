@@ -13,9 +13,9 @@ before_install:
   - sudo apt-get install --yes r-cran-sp r-cran-dplyr r-cran-rcpp r-cran-ggplot2 r-cran-raster r-cran-spatstat r-cran-shiny r-cran-igraph r-cran-stringr
 
 r_github_packages:
-  - rstudio/blogdown,
-  - reconhub/outbreaks,
-  - reconhub/epimaps,
+  - rstudio/blogdown
+  - reconhub/outbreaks
+  - reconhub/epimaps
   - reconhub/incidence
 
 
