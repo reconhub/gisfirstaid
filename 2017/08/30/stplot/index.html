@@ -82,8 +82,9 @@
 <p>You will need a map with the boundaries of the administrative areas. Freely available maps are available from <a href="http://www.gadm.org/country" class="uri">http://www.gadm.org/country</a>. This example has assumed you have downloaded the Sierra Leone shapefile.</p>
 <p>Here is how to read the shapefile into R and plot the shapefile. We assume you have downloaded the shapefile for each admin level from the link above and have saved in a folder called Geodata. We then plot the three levels of admin data on one map and write the adm2 names in the middle of the area for reference.</p>
 <pre class="r"><code>par(mar=c(0,0,0,0))
-library(raster)
-adm2data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 2)
+library(raster)</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre class="r"><code>adm2data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 2)
 adm1data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 1)
 adm0data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 0)
 
@@ -104,6 +105,7 @@ dat &lt;- ebola_sim$linelist
 dat$adm2 &lt;- sample(adm2data$NAME_2,size = nrow(dat),replace = T,prob = c(0.15,0.1,0.01,0.01,0.02,0,0,
                                                                    0.05,0.01,0,0.05,0.1,0.25,0.25)
                  )</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
 <p>To plot cumulative incidence we need to aggregate the cases by adm2 unit</p>
 <pre class="r"><code>agg_dist &lt;- as.data.frame(table(dat$adm2))
 names(agg_dist)[1] &lt;- &quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile</code></pre>
@@ -169,7 +171,7 @@ mp</code></pre>
     };
     if (inIFrame()) return;
     var d = document, s = d.createElement('script');
-    s.src = '//reconhub-github-io.disqus.com/embed.js'; s.async = true;
+    s.src = '//gisfirstaid.disqus.com/embed.js'; s.async = true;
     s.setAttribute('data-timestamp', +new Date());
     (d.head || d.body).appendChild(s);
   })();

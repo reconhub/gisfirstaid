@@ -21,6 +21,16 @@
     </item>
     
     <item>
+      <title>Static and dynamic choropleth maps and more</title>
+      <link>/2017/08/31/choropleths/</link>
+      <pubDate>Thu, 31 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/31/choropleths/</guid>
+      <description>Load packages We will begin by loading the necessary packages for these analyses
+library(sp) library(sf) library(osmdata) library(tmap) library(leaflet) library(leaflet.extras) library(lubridate) library(tidyverse)  Download and load the administrative boundary data In order to get the administrative boundaries for use in our plots, we use the getData() function from the raster package, which connects to the Global Administrative Areas spatial database of administrative boundaries.</description>
+    </item>
+    
+    <item>
       <title>Create custom maps from openstreetmap</title>
       <link>/2017/08/30/osmplotr-maps/</link>
       <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
