@@ -3,24 +3,25 @@ Type: Website
 Title: Does not matter.
 Version: 0.0.1
 Imports:
-  blogdown
-  osmplotr
-  osmdata
-  magrittr
-  dplyr
-  sf
-  sp
-  RColorBrewer
-  latticeExtra
-  ggplot2
-  ggmap
-  deldir
-  leaflet
-  geosphere
-  htmlwidgets
-  webshot
+  blogdown,
+  osmplotr,
+  osmdata,
+  magrittr,
+  dplyr,
+  sf,
+  sp,
+  RColorBrewer,
+  latticeExtra,
+  ggplot2,
+  ggmap,
+  deldir,
+  leaflet,
+  ggrepel,
+  geosphere,
+  htmlwidgets,
+  webshot,
 Remotes:
-  rstudio/blogdown
-  reconhub/outbreaks
-  reconhub/epimaps
+  rstudio/blogdown,
+  reconhub/outbreaks,
+  reconhub/epimaps,
   reconhub/incidence
