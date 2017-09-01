@@ -13,7 +13,7 @@ git fetch
 git checkout gh-pages
 
 rm -rf *
-cp ../../public/* .
+cp ../../public/* . -r
 
 git add .
 git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"

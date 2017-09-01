@@ -6,6 +6,9 @@ branches:
   only:
     - master
 
+apt_packages:
+  - libudunits2-dev
+
 cache:
   packages: yes
   directories:
