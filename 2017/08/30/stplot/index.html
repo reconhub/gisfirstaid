@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.26" />
+
+
+<title>Example to plot spatiotemporal areal data - RECON mapping first aid</title>
+<meta property="og:title" content="Example to plot spatiotemporal areal data - RECON mapping first aid">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav2">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="http://www.repidemicsconsortium.org">About</a></li>
+    
+    <li><a href="https://github.com/reconhub/gisfirstaid">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+    <a href="https://github.com/reconhub/gisfirstaid" style="cursor:hand;"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">Example to plot spatiotemporal areal data</h1>
+
+    
+    <span class="article-date">2017/08/30</span>
+    by
+    <span class="article-author">Isobel Blake</span>
+    
+
+    <div class="article-content">
+      <div id="background" class="section level2">
+<h2>Background</h2>
+<p>Often surveillance data will be reported through a line list whereby cases have information on the time of symptoms and the administrative area of residence (e.g. district). As well as plotting a time series of cases, a map of aggregated case counts at the administrative area would be informative. [Data aggregated at the administrative level is known as areal data].</p>
+<p>Here we show how to create such a map for multiple time periods.</p>
+</div>
+<div id="reading-areal-polygon-data-into-r" class="section level2">
+<h2>Reading areal polygon data into R</h2>
+<p>You will need a map with the boundaries of the administrative areas. Freely available maps are available from <a href="http://www.gadm.org/country" class="uri">http://www.gadm.org/country</a>. This example has assumed you have downloaded the Sierra Leone shapefile.</p>
+<p>Here is how to read the shapefile into R and plot the shapefile. We assume you have downloaded the shapefile for each admin level from the link above and have saved in a folder called Geodata. We then plot the three levels of admin data on one map and write the adm2 names in the middle of the area for reference.</p>
+<pre class="r"><code>par(mar=c(0,0,0,0))
+library(raster)</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre class="r"><code>adm2data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 2)
+adm1data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 1)
+adm0data &lt;- getData(&#39;GADM&#39;, country = &#39;SLE&#39;, level = 0)
+
+library(sp)
+plot(adm2data,border = &quot;grey&quot;)
+plot(adm1data,add = T)
+plot(adm0data,add = T,lwd = 2)
+text(coordinates(adm2data), labels = adm2data$NAME_2, cex = 0.6)</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/read_plot_map-1.png" width="672" /></p>
+</div>
+<div id="spatial-incidence-data" class="section level2">
+<h2>Spatial incidence data</h2>
+<p>Now we read in the surveillance data. Each case has an adm2 location attached to it</p>
+<pre class="r"><code>library(outbreaks)
+dat &lt;- ebola_sim$linelist
+
+#randomly assign district location for now to simulated data
+dat$adm2 &lt;- sample(adm2data$NAME_2,size = nrow(dat),replace = T,prob = c(0.15,0.1,0.01,0.01,0.02,0,0,
+                                                                   0.05,0.01,0,0.05,0.1,0.25,0.25)
+                 )</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<p>To plot cumulative incidence we need to aggregate the cases by adm2 unit</p>
+<pre class="r"><code>agg_dist &lt;- as.data.frame(table(dat$adm2))
+names(agg_dist)[1] &lt;- &quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile</code></pre>
+<p>We then need to merge this with the shapefile</p>
+<pre class="r"><code>adm2data &lt;- merge(adm2data,agg_dist,by = &quot;NAME_2&quot;,all.x=T)
+adm2data$Freq[which(is.na(adm2data$Freq))] &lt;- 0</code></pre>
+<p>Then create a map of cumulative cases using spplot function from the ‘sp’ package</p>
+<pre class="r"><code>spplot(adm2data,&quot;Freq&quot;)</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/map%20cumulative-1.png" width="672" /></p>
+<p>Now tweak the colours. Here we use ‘RColorBrewer’ package. Firstly let’s see what palettes are available</p>
+<pre class="r"><code>library(RColorBrewer)
+display.brewer.all()</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/colour%20choice-1.png" width="672" /></p>
+<p>and choose the red palette</p>
+<pre class="r"><code>col_pal &lt;- brewer.pal(9,&quot;Reds&quot;)[-(1:2)] # remove first two as white
+my_col &lt;- colorRampPalette(col_pal)</code></pre>
+<p>Now we put this into the maps</p>
+<pre class="r"><code>cats &lt;- c(0,1,50,100,250,500,1000,1500,2000)
+mp &lt;- spplot(adm2data,&quot;Freq&quot;,at=cats,col.regions=c(&quot;white&quot;,my_col(length(cats)-1)),col=&quot;#E0EEE0&quot;)
+mp</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/make%20map%20colour-1.png" width="672" /></p>
+<p>Now we add other admin boundaries</p>
+<pre class="r"><code>library(latticeExtra)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre class="r"><code>mp &lt;- mp + layer(sp.polygons(adm1data,lwd=1.2)) + layer(sp.polygons(adm0data,lwd=2))
+mp</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/make%20all%20boundaries-1.png" width="672" /></p>
+</div>
+<div id="plotting-spatiotemporal-data" class="section level2">
+<h2>Plotting spatiotemporal data</h2>
+<p>Now we could like to see how the spatial incidence changes across the course of the epidemic</p>
+<p>We use the incidence package to generate monthly incidence (every 30 days) by each district and the spacetime function from the epimaps package to then plot the data</p>
+<pre class="r"><code>library(incidence)
+agg_dat_spatiotemp &lt;- incidence(dat$date_of_onset,30,groups=dat$adm2)
+
+#devtools::install_github(&quot;reconhub/epimaps&quot;)
+library(epimaps)
+mp &lt;- spacetime(agg_dat_spatiotemp,adm2data,type=&quot;map&quot;,main=&quot;&quot;,pal = my_col,
+                      par.strip.text=list(cex=0.7),col=&quot;#E0EEE0&quot;)
+mp &lt;- mp + layer(sp.polygons(adm1data,lwd=1.2)) + layer(sp.polygons(adm0data,lwd=2))
+mp</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime-1.png" width="672" /></p>
+<p>We can also view the data in a grid</p>
+<pre class="r"><code>spacetime(agg_dat_spatiotemp,adm2data,type = &quot;heatmap&quot;,main=&quot;&quot;)</code></pre>
+<p><img src="/post/2017-08-30-stplot_files/figure-html/plot_spacetime_grid-1.png" width="672" /></p>
+</div>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//gisfirstaid.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+            If not stated otherwise: text is licesensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. Code is licensed <a href="https://opensource.org/licenses/MIT">MIT</a>.
+
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

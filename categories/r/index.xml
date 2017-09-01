@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on RECON mapping first aid</title>
+    <link>/categories/r/</link>
+    <description>Recent content in R on RECON mapping first aid</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 30 Aug 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mapping point data</title>
+      <link>/2017/08/30/map-points/</link>
+      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/30/map-points/</guid>
+      <description>In this tutorial, we illustrate how to generate maps using point data. Typically, individual points will correspond to the location of a reported case. We will illustrate several approaches including: basic point maps, representing point density, and using spatial clustering to approximate spatial structures.
+The data: a simulated Ebola outbreak in Freetown This example uses the latest devel version of the http://www.repidemicsconsortium.org/outbreaks/ package, which can be installed by typing:
+ devtools::install_github(&amp;quot;reconhub/outbreaks&amp;quot;)  Note that this requires devtools to be installed with its dependencies.</description>
+    </item>
+    
+  </channel>
+</rss>
