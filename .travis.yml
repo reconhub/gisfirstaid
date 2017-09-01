@@ -1,0 +1,32 @@
+language: r
+dist: trusty
+sudo: required
+
+branches:
+  only:
+    - master
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
+  - sudo apt-get --yes --force-yes update -qq
+  - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev libudunits2-dev
+  - sudo apt-get install --yes r-cran-sp r-cran-dplyr r-cran-rcpp r-cran-ggplot2 r-cran-raster r-cran-spatstat r-cran-shiny r-cran-igraph r-cran-stringr
+
+r_github_packages:
+  - rstudio/blogdown,
+  - reconhub/outbreaks,
+  - reconhub/epimaps,
+  - reconhub/incidence
+
+
+cache:
+  packages: yes
+
+before_script:
+  - Rscript -e 'blogdown::install_hugo()'
+
+script:
+  - Rscript -e 'blogdown::build_site()'
+
+after_success:
+  - travispush.sh

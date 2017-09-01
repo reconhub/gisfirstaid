@@ -3,8 +3,8 @@ languageCode = "en-us"
 title = "RECON mapping first aid"
 theme = "epimaps"
 googleAnalytics = ""
-disqusShortname = ""
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+disqusShortname = "reconhub-github-io"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "flowsmap.html"]
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
@@ -14,7 +14,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "http://www.repidemicsconsortium.org"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/reconhub"
+    url = "https://github.com/reconhub/gisfirstaid"
 
 [params]
     description = "A website built through Hugo and blogdown."
