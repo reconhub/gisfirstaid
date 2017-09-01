@@ -11,6 +11,14 @@ before_install:
   - sudo apt-get --yes --force-yes update -qq
   - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev libudunits2-dev
   - sudo apt-get install --yes r-cran-sp r-cran-dplyr r-cran-rcpp r-cran-ggplot2 r-cran-raster r-cran-spatstat r-cran-shiny r-cran-igraph r-cran-stringr
+
+r_github_packages:
+  - rstudio/blogdown,
+  - reconhub/outbreaks,
+  - reconhub/epimaps,
+  - reconhub/incidence
+
+
 cache:
   packages: yes
   directories:
