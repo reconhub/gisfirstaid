@@ -12,6 +12,7 @@ addons:
       - libudunits2-dev
       - libgdal-dev
       - libproj-dev
+      - libgdal-dev
 
 cache:
   packages: yes
