@@ -2,6 +2,7 @@
 title: "Mapping point data"
 author: "Thibaut Jombart"
 date: 2017-08-30
+caption: "Mapping and clustering point locations"
 categories: ["R"]
 tags: ["R Markdown", "map", "plot"]
 image: "post/2017-08-30-map-points_files/figure-html/voronoi-3.png"

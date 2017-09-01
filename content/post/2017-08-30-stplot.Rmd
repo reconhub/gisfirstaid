@@ -2,6 +2,7 @@
 title: Example to plot spatiotemporal areal data
 author: "Isobel Blake"
 date: "2017-08-30"
+caption: "Combine various packages to plot spatio-temporal incidence"
 image: "post/2017-08-30-stplot_files/figure-html/plot_spacetime-1.png"
 slug: stplot
 categories: []
