@@ -9,7 +9,9 @@ branches:
 addons:
   apt:
     packages:
-    - libudunits2-dev
+      - libudunits2-dev
+      - libgdal-dev
+      - libproj-dev
 
 cache:
   packages: yes
