@@ -4,7 +4,7 @@ author: "Thibaut Jombart"
 date: 2017-08-30
 categories: ["R"]
 tags: ["R Markdown", "map", "plot"]
-image: "post/2017-08-30-map-points_files/figure-html/density_map_3-1.png"
+image: "post/2017-08-30-map-points_files/figure-html/voronoi-3.png"
 slug: map-points
 output: html_document
 ---
@@ -94,8 +94,8 @@ map:
 
 ```{r basic_map}
 
-library(ggmap)
 library(ggplot2)
+library(ggmap)
 
 ## spatial locations
 base_points <- ggplot(data = lonlat, aes(x = lon, y = lat))
@@ -145,11 +145,10 @@ One can also represent case density using a heatmap:
 
 ```{r density_map_3}
 
-heat_colors <- scale_fill_gradientn("Case density", colors = c("white", "gold", "red", "darkred"))
+heat_colors <- scale_fill_gradientn("Case density", colors = c("white", "gold", "red", "darkred"), guide = FALSE)
 
 base + stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .3) +
-       heat_colors +
-       theme(legend.position = c(.12, .85))
+       heat_colors
        
 ```
 
@@ -166,38 +165,40 @@ spatial groups, so as to minimize the overall distance between cases and their
 group centroid.
 
 We illustrate this procedure for an arbitrary number of groups set to 60 (this
-number can be varied to suit the needs of a specific dataset):
+number can be varied to suit the needs of a specific dataset). This feature uses
+the devel version of [*epimaps*](https://github.com/reconhub/epimaps), which can
+be installed using `install_github("reconhub/epimaps")`.
 
-```{r clust_map}
+```{r clust_map, message = FALSE}
 
-clust <- kmeans(lonlat, centers = 60)
+library(epimaps)
+clust <- spatial_clusters(lonlat, 60)
+clust
+plot(clust)
 
-xy_clust <- data.frame(clust$centers, number = clust$size)
-
-base + geom_point(data = xy_clust,
-       		  aes(x = lon, y = lat, size = number, color = cluster),
-       		  alpha = .5, color = "red") +
-       scale_size("Number of cases", range = c(1,15)) +
-       theme(legend.position = c(.1,.8))
-       
 ```
 
 We can add a Voronoi tesselation which will indicate which points belong to
-which cluster:
+which cluster (see `?plot.spatial_clusters` for options):
 
 ```{r voronoi, message = FALSE}
+## basic plot
 
-library(deldir)
-vor <- deldir(xy_clust$lon, xy_clust$lat)
-
-gg_vor <- geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
-		       data = vor$dirsgs,
-    		       linetype = 1,
-		       color= "black")
+plot(clust, show_tiles = TRUE)
 
 
-base + geom_point(col = "red", alpha = .2) +
-       gg_vor +	      
-       theme(legend.position = c(.1,.8))
-       
+## more customisation
+
+plot(clust, show_tiles = TRUE, show_clusters = FALSE,
+     show_points = TRUE, pt_alpha = 0.1)
+
+
+## different representation, more granularity
+
+new_clust <- spatial_clusters(lonlat, 500)
+
+plot(new_clust, show_tiles = TRUE, show_clusters = FALSE,
+     show_points = TRUE, show_density = TRUE, zoom = 14,
+     dens_bw = 0.01, pt_col = "black", pt_alpha = 0.1)
+
 ```
