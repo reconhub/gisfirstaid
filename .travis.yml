@@ -16,6 +16,14 @@ cache:
   directories:
     - $HOME/bin
 
+r_packages:
+ - dplyr
+ - Rcpp
+ - ggplot2
+ - sf
+ - igraph
+ - stringr
+
 before_script:
   - Rscript -e 'blogdown::install_hugo()'
 
