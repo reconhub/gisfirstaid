@@ -7,7 +7,7 @@ git config --global user.name "Travis CI"
 mkdir ghpages
 cd ghpages
 
-git clone git@github.com:reconhub/gisfirstaid.git
+git clone https://github.com/reconhub/gisfirstaid.git
 cd gisfirstaid
 git fetch
 git checkout gh-pages
