@@ -1,4 +1,5 @@
-baseurl = "/"
+baseurl: "https://yihui.name/"
+
 languageCode = "en-us"
 title = "RECON mapping first aid"
 theme = "epimaps"
@@ -18,7 +19,8 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "flowsmap.html"
 
 [params]
     description = "A website built through Hugo and blogdown."
-
+    disqusURL = "https://gisfirstaid.netlify.com"
+    
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.11.0"
     highlightjsCDN = "//cdn.bootcss.com"
