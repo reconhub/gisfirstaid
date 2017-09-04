@@ -24,6 +24,7 @@ Imports:
   lubridate,
   stringr,
   tidyverse,
+  tmap,
   webshot,
   geosphere
 Remotes:
