@@ -1,4 +1,4 @@
-baseurl: "https://yihui.name/"
+baseurl = "https://gisfirstaid.netlify.com"
 
 languageCode = "en-us"
 title = "RECON mapping first aid"
