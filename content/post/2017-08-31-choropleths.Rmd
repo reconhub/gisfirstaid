@@ -270,35 +270,3 @@ leaflet() %>%
   )
 ```
 
-
-### Plot cases as choropleth with arbitrary icons in each polygon centroid
-```{r}
-our_imperial_masters <- 
-  iconList(
-    teebz = 
-      makeIcon(
-        "https://i1.sndcdn.com/avatars-000038319795-u5v0iq-t500x500.jpg",
-        "https://i1.sndcdn.com/avatars-000038319795-u5v0iq-t500x500.jpg", 
-        100, 100),
-    rich = 
-      makeIcon(
-        "https://avatars1.githubusercontent.com/u/1558093?v=4&s=400", 
-        "https://avatars1.githubusercontent.com/u/1558093?v=4&s=400", 
-        100, 100)
-  )
-
-leaflet() %>% 
-  addTiles() %>% 
-  addPolygons(
-    data = sle_sf,
-    stroke = TRUE, weight = 1, color = "black", opacity = 1,
-    fillColor = ~pal(cases),
-    fillOpacity = 0.5, smoothFactor = 0.5
-  ) %>% 
-  addMarkers(
-    data = st_centroid(sle_sf),
-    icon = ~our_imperial_masters
-  )
-```
-
-
