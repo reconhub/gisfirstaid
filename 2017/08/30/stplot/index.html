@@ -105,7 +105,6 @@ dat &lt;- ebola_sim$linelist
 dat$adm2 &lt;- sample(adm2data$NAME_2,size = nrow(dat),replace = T,prob = c(0.15,0.1,0.01,0.01,0.02,0,0,
                                                                    0.05,0.01,0,0.05,0.1,0.25,0.25)
                  )</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
 <p>To plot cumulative incidence we need to aggregate the cases by adm2 unit</p>
 <pre class="r"><code>agg_dist &lt;- as.data.frame(table(dat$adm2))
 names(agg_dist)[1] &lt;- &quot;NAME_2&quot; # has to be the same column name is the adm2 in the shapefile</code></pre>
@@ -161,6 +160,8 @@ mp</code></pre>
   <div id="disqus_thread"></div>
   <script>
   var disqus_config = function () {
+  
+    this.page.url = "https:\/\/gisfirstaid.netlify.com" + location.pathname;
   
   };
   (function() {
