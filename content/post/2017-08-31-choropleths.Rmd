@@ -23,7 +23,11 @@ library(tmap)
 library(leaflet)
 library(leaflet.extras)
 library(lubridate)
-library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(purrr)
+library(tidyr)
 ```
 
 # Download and load the administrative boundary data
