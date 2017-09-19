@@ -39,11 +39,11 @@ bbox <- osmdata::getbb("Freetown")
 
 # get highways by type
 dat_highway_prim <- extract_osm_objects(key = "highway", value = "primary", bbox = bbox)
-Sys.sleep(5) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_sec <- extract_osm_objects(key = "highway", value = "secondary", bbox = bbox)
-Sys.sleep(5) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_tert <- extract_osm_objects(key = "highway", value = "tertiary", bbox = bbox)
-Sys.sleep(5) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_res <- extract_osm_objects(key = "highway", value = "residential", bbox = bbox)
 	
 # now create the map
