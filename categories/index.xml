@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on RECON mapping first aid</title>
-    <link>/categories/</link>
+    <link>https://gisfirstaid.netlify.com/categories/</link>
     <description>Recent content in Categories on RECON mapping first aid</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://gisfirstaid.netlify.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>R</title>
-      <link>/categories/r/</link>
+      <link>https://gisfirstaid.netlify.com/categories/r/</link>
       <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>/categories/r/</guid>
+      <guid>https://gisfirstaid.netlify.com/categories/r/</guid>
       <description></description>
     </item>
     

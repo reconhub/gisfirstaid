@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.26" />
+<meta name="generator" content="Hugo 0.27.1" />
 
 
 <title>Create custom maps from openstreetmap - RECON mapping first aid</title>
@@ -85,11 +85,11 @@ bbox &lt;- osmdata::getbb(&quot;Freetown&quot;)
 
 # get highways by type
 dat_highway_prim &lt;- extract_osm_objects(key = &quot;highway&quot;, value = &quot;primary&quot;, bbox = bbox)
-Sys.sleep(1) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_sec &lt;- extract_osm_objects(key = &quot;highway&quot;, value = &quot;secondary&quot;, bbox = bbox)
-Sys.sleep(1) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_tert &lt;- extract_osm_objects(key = &quot;highway&quot;, value = &quot;tertiary&quot;, bbox = bbox)
-Sys.sleep(1) # be nice to overpass API
+Sys.sleep(10) # be nice to overpass API
 dat_highway_res &lt;- extract_osm_objects(key = &quot;highway&quot;, value = &quot;residential&quot;, bbox = bbox)
     
 # now create the map
