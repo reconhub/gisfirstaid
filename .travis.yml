@@ -16,6 +16,7 @@ r_github_packages:
   - reconhub/outbreaks
   - reconhub/epimaps
   - reconhub/incidence
+  - tidyverse/ggplot2
 
 
 cache:
