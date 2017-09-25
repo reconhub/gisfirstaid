@@ -2,16 +2,24 @@
 
 A website with examples on common GIS problems in epidemiology.
 
+
 ## Live version
 It is currently hosted here: https://gisfirstaid.netlify.com/
 
-The actual page is on the branch `gh-pages`. Whenever someone pushes a new version, the netlify site gets automatically updated.
+This website is generated using
+[blogdown](https://bookdown.org/yihui/blogdown/). The files of the website
+itself are contained in the `/public` folder of this *github* project. Whenever
+someone pushes a new version of these files, the netlify site gets automatically
+updated.
+
 
 ## Contributing
 
-When you want to add a new article, use `blogdown::new_post`. In case you found an error or want to change something, simply send a PR.
+The workflow for contributing is fairly simple if you are familiar with using github, and writing Rmarkdown documents:
 
-Each post needs to have some metadata. Look at the existing posts for inspiration
+1. [fork](https://github.com/reconhub/gisfirstaid#fork-destination-box) the website on github, so that you will create your own copy of the website
+
+2. to add a new article to `content/posts/`, use `blogdown::new_post` or copy an existing post and change it as appropriate. Each post needs to have some metadata. Look at the existing posts for inspiratio:n
 ```
 ---
 title: <the title of the post>
@@ -25,8 +33,8 @@ tags: []
 ---
 ```
 
-## Deploying
+3. use `blogdown::serve_site` to update the website locally (on your computer)
+and examine your new post; make changes as appropriate
 
-* Use `blogdown::build_site`
-* Commit the content of the `public` folder into the detached `gh-pages` branch
-* Push
+4. push your changes to your personal fork of the website, and make a [pull request](https://github.com/reconhub/gisfirstaid/pulls)
+
