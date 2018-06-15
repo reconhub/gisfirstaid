@@ -1,7 +1,7 @@
 ---
 title: "Static and dynamic choropleth maps and more"
 author: "Jonny Polonsky"
-caption: "Use leaflet to create a map of population flows"
+caption: "Guidance for creating static and dynamic maps"
 date: '2017-08-31'
 image: "post/2017-08-31-choropleths_files/figure-html/ggplot-1.png"
 slug: choropleths
@@ -195,8 +195,8 @@ ebola_df <-
   mutate(
     date = 
       str_c(
-        month(date_of_onset, label = TRUE),
-        year(date_of_onset), sep = '-'
+        lubridate::month(date_of_onset, label = TRUE),
+        lubridate::year(date_of_onset), sep = '-'
       )
   ) %>% 
   nest(-date)
